@@ -1,0 +1,25 @@
+From 091b7f3c0599afe2859f687ef48d18a935dc4651 Mon Sep 17 00:00:00 2001
+From: Pranav Sivaraman <14294205+pranav-sivaraman@users.noreply.github.com>
+Date: Thu, 20 Jul 2023 19:19:51 -0400
+Subject: [PATCH] add support for other microarchitectures
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 54034ee..dde3418 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -44,7 +44,7 @@ endif ()
+ 
+ # setup some defaults flags for everything
+ set(DEFAULT_DEBUG_FLAGS -O2 -fno-omit-frame-pointer)
+-set(DEFAULT_RELEASE_FLAGS -O3 -march=native)
++set(DEFAULT_RELEASE_FLAGS -O3)
+ 
+ macro(hint_flag FLAG DESCRIPTION)
+     if (NOT DEFINED ${FLAG})
+-- 
+2.39.2 (Apple Git-143)
+

@@ -28,6 +28,8 @@ class Babelstream(CMakePackage, CudaPackage, ROCmPackage):
 
     maintainers("tomdeakin", "kaanolgu", "tom91136", "robj0nes")
 
+    patch("support_microarchitectures.patch")
+
     # Languages
     # Also supported variants are cuda and rocm (for HIP)
     variant("sycl", default=False, description="Enable SYCL support")
