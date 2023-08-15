@@ -25,17 +25,19 @@ class Xsbench(MakefilePackage, CudaPackage):
     version("13", sha256="b503ea468d3720a0369304924477b758b3d128c8074776233fa5d567b7ffcaa2", deprecated=True)
 
     variant("mpi", default=False, description="Build with MPI support")
-    variant("openmp", default=False, description="Build with OpenMP support")
+    variant("openmp-threading", default=False, description="Build with OpenMP Threading support")
     variant("cuda", default=False, when="@19:", description="Build with CUDA support")
 
     depends_on("mpi", when="+mpi")
     
     @property
     def build_directory(self):
-        if "+openmp" in self.spec:
+        spec = self.spec
+        
+        if "+openmp-threading" in spec:
             return "openmp-threading"
 
-        if "+cuda" in self.spec:
+        if "+cuda" in spec:
             return "cuda"
 
     @property
