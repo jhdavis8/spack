@@ -26,7 +26,6 @@ class Xsbench(MakefilePackage, CudaPackage):
 
     variant("mpi", default=False, description="Build with MPI support")
     variant("openmp-threading", default=False, description="Build with OpenMP Threading support")
-    variant("cuda", default=False, when="@19:", description="Build with CUDA support")
 
     depends_on("mpi", when="+mpi")
     
