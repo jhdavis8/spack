@@ -50,9 +50,14 @@ class Xsbench(MakefilePackage, CudaPackage):
             targets.append("CC=mpicc")
             targets.append("MPI=yes")
         else:
-            targets.append("CC=cc")
+            if "+cuda" in spec:
+                targets.append("CC={0}".format(spec["cuda"].prefix.bin.nvcc))
+            else:
+                targets.appned("CC=cc")
+                
             targets.append("MPI=no")
 
+            
         targets.append("LDFLAGS=-lm")
         return targets
 
