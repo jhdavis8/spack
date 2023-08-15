@@ -24,8 +24,8 @@ class Xsbench(MakefilePackage, CudaPackage):
     version("14", sha256="595afbcba8c1079067d5d17eedcb4ab0c1d115f83fd6f8c3de01d74b23015e2d", deprecated=True)
     version("13", sha256="b503ea468d3720a0369304924477b758b3d128c8074776233fa5d567b7ffcaa2", deprecated=True)
 
-    variant("mpi", default=True, description="Build with MPI support")
-    variant("openmp", default=True, description="Build with OpenMP support")
+    variant("mpi", default=False, description="Build with MPI support")
+    variant("openmp", default=False, description="Build with OpenMP support")
     variant("cuda", default=False, when="@19:", description="Build with CUDA support")
 
     depends_on("mpi", when="+mpi")
