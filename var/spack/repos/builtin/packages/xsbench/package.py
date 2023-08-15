@@ -7,7 +7,7 @@
 from spack.package import *
 
 
-class Xsbench(MakefilePackage, CudaPackage):
+class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
     """XSBench is a mini-app representing a key computational
     kernel of the Monte Carlo neutronics application OpenMC.
     A full explanation of the theory and purpose of XSBench
@@ -24,16 +24,24 @@ class Xsbench(MakefilePackage, CudaPackage):
     version("14", sha256="595afbcba8c1079067d5d17eedcb4ab0c1d115f83fd6f8c3de01d74b23015e2d", deprecated=True)
     version("13", sha256="b503ea468d3720a0369304924477b758b3d128c8074776233fa5d567b7ffcaa2", deprecated=True)
 
+    build_system(
+        conditional("cmake", when="+kokkos"), conditional("makefile", when="~kokkos"), default="makefile"
+    )
+
     variant("mpi", default=False, description="Build with MPI support")
     variant("openmp-threading", default=False, description="Build with OpenMP Threading support")
     variant("openmp-offload", default=False, description="Build with OpenMP Offload support")
     variant("hip", default=False, description="Build with HIP support")
+    variant("kokkos", default=False, description="Build with Kokkos support")
 
     depends_on("mpi", when="+mpi")
     depends_on("hip", when="+hip")
+    depends_on("kokkos", when="+kokkos")
 
     conflicts("cuda_arch=none", when="+cuda", msg="CUDA architecture is required")
 
+    
+class MakefileBuilder(spack.build_systems.makefile.MakefileBuilder):
     @property
     def build_directory(self):
         spec = self.spec
@@ -49,6 +57,9 @@ class Xsbench(MakefilePackage, CudaPackage):
 
         if "+cuda" in spec:
             return "cuda"
+        
+        if "+kokkos" in spec:
+            return "kokkos"
 
     @property
     def build_targets(self):
@@ -71,10 +82,11 @@ class Xsbench(MakefilePackage, CudaPackage):
             else:
                 targets.append("CC=cc")
 
-            if "+openmp-threading" in spec or "+openmp-offload" in spec:
-                cflags += " " + self.compiler.openmp_flag
-                
+
             targets.append("MPI=no")
+
+        if "+openmp-threading" in spec or "+openmp-offload" in spec:
+            cflags += " " + self.compiler.openmp_flag
 
         targets.append("CFLAGS={0}".format(cflags))
         targets.append("LDFLAGS={0}".format(ldflags))
@@ -85,3 +97,18 @@ class Xsbench(MakefilePackage, CudaPackage):
         mkdir(prefix.bin)
         with working_dir(self.build_directory):
             install("XSBench", prefix.bin)
+
+class CMakeBuilder(spack.build_systems.cmake.CMakeBuilder):
+    @property
+    def root_cmakelists_dir(self):
+        spec = self.spec
+
+        if "+kokkos" in spec:
+            return "kokkos"
+    
+    def cmake_args(self):
+        spec = self.spec
+        args = [
+            self.define("Kokkos_ROOT", spec["kokkos"].prefix)
+        ]
+        return args
