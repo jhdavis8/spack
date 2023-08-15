@@ -41,27 +41,19 @@ class Xsbench(MakefilePackage, CudaPackage):
 
     @property
     def build_targets(self):
+        spec = self.spec
+        
         targets = []
         cflags = ""
 
-        if "+cuda" in self.spec:
-            return ["SM_VERSION={0}".format(self.spec.variants["cuda_arch"].value[0])]
-
-        if not self.spec.satisfies("%nvhpc@:20.11"):
-            cflags = "-std=gnu99"
-
-        if "+mpi" in self.spec:
-            targets.append("CC={0}".format(self.spec["mpi"].mpicc))
+        if "+mpi" in spec:
+            targets.append("CC=mpicc")
             targets.append("MPI=yes")
         else:
-            targets.append("CC={0}".format(self.compiler.cc))
+            targets.append("CC=cc")
             targets.append("MPI=no")
 
-        if "+openmp" in self.spec:
-            cflags += " " + self.compiler.openmp_flag
-        targets.append("CFLAGS={0}".format(cflags))
         targets.append("LDFLAGS=-lm")
-
         return targets
 
     def install(self, spec, prefix):
