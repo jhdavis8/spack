@@ -83,6 +83,7 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
                 targets.append("CC={0}".format(spec["hip"].prefix.bin.hipcc))
             else:
                 targets.append("CC=cc")
+                targets.append("CXX=cxx")
 
 
             targets.append("MPI=no")
@@ -91,7 +92,7 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
             cflags += " " + self.compiler.openmp_flag
 
         if "+sycl" in spec:
-            cflags += " -fsycl"
+            cflags += " -fsycl" + " " + self.compiler.cxx17_flag
 
         targets.append("CFLAGS={0}".format(cflags))
         targets.append("LDFLAGS={0}".format(ldflags))
