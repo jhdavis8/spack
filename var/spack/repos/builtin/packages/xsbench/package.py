@@ -44,7 +44,8 @@ class Xsbench(MakefilePackage, CudaPackage):
         spec = self.spec
         
         targets = []
-        cflags = ""
+        cflags = "-O3"
+        ldflags = "-lm"
 
         if "+mpi" in spec:
             targets.append("CC=mpicc")
@@ -52,13 +53,16 @@ class Xsbench(MakefilePackage, CudaPackage):
         else:
             if "+cuda" in spec:
                 targets.append("CC={0}".format(spec["cuda"].prefix.bin.nvcc))
+            elif "+openmp-threading" in spec:
+                cflags += " " + self.compiler.openmp_flag
             else:
-                targets.appned("CC=cc")
+                targets.append("CC=cc")
                 
             targets.append("MPI=no")
 
-            
-        targets.append("LDFLAGS=-lm")
+        targets.append("CFLAGS={0}".format(cflags))
+        targets.append("LDFLAGS={0}".format(ldflags))
+        
         return targets
 
     def install(self, spec, prefix):
