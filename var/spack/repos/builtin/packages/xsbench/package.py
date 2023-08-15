@@ -40,8 +40,6 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
 
     conflicts("cuda_arch=none", when="+cuda", msg="CUDA architecture is required")
 
-    
-class MakefileBuilder(spack.build_systems.makefile.MakefileBuilder):
     @property
     def build_directory(self):
         spec = self.spec
