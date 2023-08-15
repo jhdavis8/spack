@@ -26,6 +26,7 @@ class Xsbench(MakefilePackage, CudaPackage):
 
     variant("mpi", default=False, description="Build with MPI support")
     variant("openmp-threading", default=False, description="Build with OpenMP Threading support")
+    variant("openmp-offload", default=False, description="Build with OpenMP Offload support")
 
     depends_on("mpi", when="+mpi")
 
@@ -37,6 +38,9 @@ class Xsbench(MakefilePackage, CudaPackage):
         
         if "+openmp-threading" in spec:
             return "openmp-threading"
+
+        if "+openmp-offload" in spec:
+            return "openmp-offload"
 
         if "+cuda" in spec:
             return "cuda"
@@ -56,8 +60,8 @@ class Xsbench(MakefilePackage, CudaPackage):
             if "+cuda" in spec:
                 targets.append("CC={0}".format(spec["cuda"].prefix.bin.nvcc))
                 cuda_arch = spec.variants["cuda_arch"].value
-                cflags += " " + ".join(self.cuda_flags(cuda_arch))
-            elif "+openmp-threading" in spec:
+                cflags += " " + " ".join(self.cuda_flags(cuda_arch))
+            elif "+openmp-threading" or "+openmp-offload" in spec:
                 cflags += " " + self.compiler.openmp_flag
             else:
                 targets.append("CC=cc")
