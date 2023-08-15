@@ -55,7 +55,7 @@ class Xsbench(MakefilePackage, CudaPackage):
         spec = self.spec
         
         targets = []
-        cflags = "-O3 -Wall"
+        cflags = "-O3"
         ldflags = "-lm"
 
         if "+mpi" in spec:
@@ -66,12 +66,13 @@ class Xsbench(MakefilePackage, CudaPackage):
                 targets.append("CC={0}".format(spec["cuda"].prefix.bin.nvcc))
                 cuda_arch = spec.variants["cuda_arch"].value
                 cflags += " " + " ".join(self.cuda_flags(cuda_arch))
-            elif "+openmp-threading" or "+openmp-offload" in spec:
-                cflags += " " + self.compiler.openmp_flag
             elif "+hip" in spec:
                 targets.append("CC={0}".format(spec["hip"].prefix.bin.hipcc))
             else:
                 targets.append("CC=cc")
+
+            if "+openmp-threading" in spec or "+openmp-offload" in spec:
+                cflags += " " + self.compiler.openmp_flag
                 
             targets.append("MPI=no")
 
