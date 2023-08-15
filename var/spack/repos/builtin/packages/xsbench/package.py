@@ -33,6 +33,7 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
     variant("openmp-offload", default=False, description="Build with OpenMP Offload support")
     variant("hip", default=False, description="Build with HIP support")
     variant("kokkos", default=False, description="Build with Kokkos support")
+    variant("sycl", default=False, description="Build with SYCL support")
 
     depends_on("mpi", when="+mpi")
     depends_on("hip", when="+hip")
@@ -58,6 +59,9 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
         
         if "+kokkos" in spec:
             return "kokkos"
+
+        if "+sycl" in spec:
+            return "sycl"
 
     @property
     def build_targets(self):
@@ -85,6 +89,9 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
 
         if "+openmp-threading" in spec or "+openmp-offload" in spec:
             cflags += " " + self.compiler.openmp_flag
+
+        if "+sycl" in spec:
+            cflags += " -fsycl"
 
         targets.append("CFLAGS={0}".format(cflags))
         targets.append("LDFLAGS={0}".format(ldflags))
