@@ -27,8 +27,10 @@ class Xsbench(MakefilePackage, CudaPackage):
     variant("mpi", default=False, description="Build with MPI support")
     variant("openmp-threading", default=False, description="Build with OpenMP Threading support")
     variant("openmp-offload", default=False, description="Build with OpenMP Offload support")
+    variant("hip", default=False, description="Build with HIP support")
 
     depends_on("mpi", when="+mpi")
+    depends_on("hip", when="+hip")
 
     conflicts("cuda_arch=none", when="+cuda", msg="CUDA architecture is required")
 
@@ -41,6 +43,9 @@ class Xsbench(MakefilePackage, CudaPackage):
 
         if "+openmp-offload" in spec:
             return "openmp-offload"
+
+        if "+hip" in spec:
+            return "hip"
 
         if "+cuda" in spec:
             return "cuda"
@@ -63,6 +68,8 @@ class Xsbench(MakefilePackage, CudaPackage):
                 cflags += " " + " ".join(self.cuda_flags(cuda_arch))
             elif "+openmp-threading" or "+openmp-offload" in spec:
                 cflags += " " + self.compiler.openmp_flag
+            elif "+hip" in spec:
+                targets.append("CC={0}".format(spec["hip"].prefix.bin.hipcc))
             else:
                 targets.append("CC=cc")
                 
