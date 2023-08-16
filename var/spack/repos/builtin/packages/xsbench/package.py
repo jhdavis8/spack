@@ -83,18 +83,17 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
                 cflags += " " + " ".join(self.cuda_flags(cuda_arch))
             elif "+hip" in spec:
                 targets.append("CC={0}".format(spec["hip"].prefix.bin.hipcc))
+            elif "+sycl" in spec:
+                targets.append("CC={0}".format(spack_cxx))
+                cflags += " -fsycl" + " " + self.compiler.cxx17_flag
             else:
-                targets.append("CC=cc")
-                targets.append("CXX=cxx")
+                targets.append("CC={0}".format(spack_cc))
 
 
             targets.append("MPI=no")
 
         if "+openmp-threading" in spec or "+openmp-offload" in spec:
             cflags += " " + self.compiler.openmp_flag
-
-        if "+sycl" in spec:
-            cflags += " -fsycl" + " " + self.compiler.cxx17_flag
 
         targets.append("CFLAGS={0}".format(cflags))
         targets.append("LDFLAGS={0}".format(ldflags))
