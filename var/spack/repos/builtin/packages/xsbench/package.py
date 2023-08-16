@@ -15,9 +15,11 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
 
     homepage = "https://github.com/ANL-CESAR/XSBench/"
     url = "https://github.com/ANL-CESAR/XSBench/archive/v13.tar.gz"
+    git = "https://github.com/ANL-CESAR/XSBench.git"
 
     tags = ["proxy-app", "ecp-proxy-app"]
 
+    version("master", branch="master")
     version("20", sha256="3430328267432b4c29605f248809caec3e8b0e3442d4dcd672fa09b8bb9aa1b6")
     version("19", sha256="57cc44ae3b0a50d33fab6dd48da13368720d2aa1b91cde47d51da78bf656b97e", deprecated=True)
     version("18", sha256="a9a544eeacd1be8d687080d2df4eeb701c04eda31d3806e7c3ea1ff36c26f4b0", deprecated=True)
