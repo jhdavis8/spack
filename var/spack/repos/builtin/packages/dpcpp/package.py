@@ -18,7 +18,7 @@ class Dpcpp(CMakePackage):
 
     version("develop", branch="sycl")
     version(
-        "2023-03",
+        "2023.03",
         sha256="ca85303d712c58316a91a7c97f7c78fa563a29f1669d8b2368d0c8bd92a63068",
         url="https://github.com/intel/llvm/tarball/cb91c232",
     )
