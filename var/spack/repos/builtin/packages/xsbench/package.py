@@ -39,7 +39,7 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
 
     depends_on("mpi", when="+mpi")
     depends_on("hip", when="+hip")
-    depends_on("kokkos", when="+kokkos")
+    depends_on("kokkos+openmp", when="+kokkos")
 
     conflicts("cuda_arch=none", when="+cuda", msg="CUDA architecture is required")
 
