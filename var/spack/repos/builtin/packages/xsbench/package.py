@@ -36,6 +36,7 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
     variant("hip", default=False, description="Build with HIP support")
     variant("kokkos", default=False, description="Build with Kokkos support")
     variant("sycl", default=False, description="Build with SYCL support")
+    variant("align", default=False, description="Adjust timers to match across XSBench programming model variants")
 
     depends_on("mpi", when="+mpi")
     depends_on("hip", when="+hip")
@@ -46,7 +47,7 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
     @property
     def build_directory(self):
         spec = self.spec
-        
+
         if "+openmp-threading" in spec:
             return "openmp-threading"
 
@@ -58,7 +59,7 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
 
         if "+cuda" in spec:
             return "cuda"
-        
+
         if "+kokkos" in spec:
             return "kokkos"
 
@@ -68,7 +69,7 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
     @property
     def build_targets(self):
         spec = self.spec
-        
+
         targets = []
         cflags = "-O3"
         ldflags = "-lm"
@@ -95,9 +96,15 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
         if "+openmp-threading" in spec or "+openmp-offload" in spec:
             cflags += " " + self.compiler.openmp_flag
 
+        if "+align" in spec:
+            targets.append("ALIGNED=yes")
+            cflags += " -DALIGNED_WORK"
+        elif "~align" in spec:
+            targets.append("ALIGNED=no")
+
         targets.append("CFLAGS={0}".format(cflags))
         targets.append("LDFLAGS={0}".format(ldflags))
-        
+
         return targets
 
     def install(self, spec, prefix):
@@ -112,7 +119,7 @@ class CMakeBuilder(spack.build_systems.cmake.CMakeBuilder):
 
         if "+kokkos" in spec:
             return "kokkos"
-    
+
     def cmake_args(self):
         spec = self.spec
         args = [
