@@ -116,6 +116,12 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
         if "+openmp-threading" in spec or "+openmp-offload" in spec or "+openacc" in spec:
             cflags += " " + self.compiler.openmp_flag
 
+        if "+align" in spec:
+            targets.append("ALIGNED=yes")
+            cflags += " -DALIGNED_WORK"
+        elif "~align" in spec:
+            targets.append("ALIGNED=no")
+
         targets.append("CFLAGS={0}".format(cflags))
         targets.append("LDFLAGS={0}".format(ldflags))
 
