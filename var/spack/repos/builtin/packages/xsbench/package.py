@@ -41,13 +41,11 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
 
     depends_on("mpi", when="+mpi")
     depends_on("hip", when="+hip")
-    depends_on("kokkos+openmp", when="+kokkos")
+    depends_on("kokkos", when="+kokkos")
 
     conflicts("cuda_arch=none", when="+cuda", msg="CUDA architecture is required")
     conflicts("cuda_arch=none", when="+openacc", msg="CUDA arch required with OpenACC")
     conflicts("cuda_arch=none", when="+openmp-offload", msg="CUDA arch required with OpenMP Offload")
-    requires("%nvhpc", when="+openacc", msg="OpenACC only supported with NVHPC compiler")
-    requires("%clang", when="+openmp-offload", msg="OpenMP Offload only supported with Clang compiler")
 
     @property
     def build_directory(self):
