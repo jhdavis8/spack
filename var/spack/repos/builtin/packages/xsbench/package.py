@@ -45,7 +45,9 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
 
     conflicts("cuda_arch=none", when="+cuda", msg="CUDA architecture is required")
     conflicts("cuda_arch=none", when="+openacc", msg="CUDA arch required with OpenACC")
+    conflicts("cuda_arch=none", when="+openmp-offload", msg="CUDA arch required with OpenMP Offload")
     requires("%nvhpc", when="+openacc", msg="OpenACC only supported with NVHPC compiler")
+    requires("%clang", when="+openmp-offload", msg="OpenMP Offload only supported with Clang compiler")
 
     @property
     def build_directory(self):
@@ -84,7 +86,7 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
             targets.append("CC=mpicc")
             targets.append("MPI=yes")
         else:
-            if "+cuda" in spec and "~openacc" in spec:
+            if "+cuda" in spec and "+openacc" not in spec and "+openmp-offload" not in spec:
                 targets.append("CC={0}".format(spec["cuda"].prefix.bin.nvcc))
                 cuda_arch = spec.variants["cuda_arch"].value
                 cflags += " " + " ".join(self.cuda_flags(cuda_arch))
@@ -93,6 +95,9 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
             elif "+sycl" in spec:
                 targets.append("CC={0}".format(spack_cxx))
                 cflags += " -fsycl" + " " + self.compiler.cxx17_flag
+            elif "+openmp-offload" in spec:
+                targets.append("CC={0}".format(spack_cc))
+                cflags += " -fopenmp-targets=nvptx-nvidia-cuda -Xopenmp-target -march=sm_" + spec.variants["cuda_arch"].value[0]
             elif "+openacc" in spec:
                 targets.append("CC={0}".format(spack_cc))
                 cflags += " -acc -Minfo=accel -gpu=cc" + spec.variants["cuda_arch"].value[0]
@@ -102,7 +107,7 @@ class Xsbench(MakefilePackage, CMakePackage, CudaPackage):
             targets.append("MPI=no")
 
         # Need to add for acc here because we use omp timers in the acc code
-        if "+openmp-threading" in spec or "+openmp-offload" in spec or "+acc" in spec:
+        if "+openmp-threading" in spec or "+openmp-offload" in spec or "+openacc" in spec:
             cflags += " " + self.compiler.openmp_flag
 
         if "+align" in spec:
