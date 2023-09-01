@@ -27,8 +27,6 @@ class Dpcpp(CMakePackage):
 
     maintainers("ravil-mobile")
 
-    requires("%gcc", msg="DPC++ builds only with GCC")
-
     variant("cuda", default=False, description="switch from OpenCL to CUDA")
     variant("hip", default=False, description="switch from OpenCL to HIP")
     variant(
